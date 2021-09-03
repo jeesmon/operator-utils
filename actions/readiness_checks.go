@@ -5,13 +5,16 @@ SPDX-License-Identifier: Apache-2.0
 package actions
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
+	apiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -25,6 +28,22 @@ type ResourceNotReadyError struct {
 
 func (e *ResourceNotReadyError) Error() string {
 	return fmt.Sprintf("%v/%v is not ready", e.PartialObject.GetNamespace(), e.PartialObject.GetName())
+}
+
+func IsResourceFound(client client.Client, ctx context.Context, req ctrl.Request, instance client.Object) (bool, error) {
+	err := client.Get(ctx, req.NamespacedName, instance)
+	if err != nil {
+		if apiErrors.IsNotFound(err) {
+			// Request object not found, could have been deleted after reconcile request.
+			// Owned objects are automatically garbage collected. For additional cleanup logic use finalizers.
+			// Return and don't requeue
+			return false, nil
+		}
+		// Error reading the object - requeue the request.
+		return false, err
+	}
+
+	return true, nil
 }
 
 func IsResourceNotReadyError(err error) bool {
