@@ -44,12 +44,16 @@ func ManageError(client client.Client, ctx context.Context, instance client.Obje
 	err := client.Status().Update(ctx, instance)
 	if err != nil {
 		log.Error(err, "unable to update status")
+		return reconcile.Result{
+			RequeueAfter: RequeueDelayError,
+			Requeue:      true,
+		}, err
 	}
 
 	return reconcile.Result{
 		RequeueAfter: RequeueDelayError,
 		Requeue:      true,
-	}, nil
+	}, issue
 }
 
 func ManageSuccess(client client.Client, ctx context.Context, instance client.Object, statusConditions *[]conditions.Condition, resourcesReady bool) (reconcile.Result, error) {
@@ -76,7 +80,7 @@ func ManageSuccess(client client.Client, ctx context.Context, instance client.Ob
 		return reconcile.Result{
 			RequeueAfter: RequeueDelayError,
 			Requeue:      true,
-		}, nil
+		}, err
 	}
 
 	return reconcile.Result{RequeueAfter: RequeueDelay}, nil
