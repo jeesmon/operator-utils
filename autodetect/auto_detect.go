@@ -1,6 +1,4 @@
 /*
-(C) Copyright IBM Corp. 2021
-
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -33,7 +31,7 @@ type DetectConfig struct {
 // Background represents a procedure that runs in the background, periodically auto-detecting features
 type Background struct {
 	config DetectConfig
-	dc     discovery.DiscoveryInterface
+	dc     discovery.ServerResourcesInterface
 	ticker *time.Ticker
 }
 

@@ -1,4 +1,4 @@
-all: fmt vet tidy
+all: fmt vet tidy test
 
 fmt:
 	go fmt ./...
@@ -8,3 +8,6 @@ vet:
 
 tidy:
 	go mod tidy
+
+test:
+	go test ./... -coverprofile cover.out -v
