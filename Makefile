@@ -12,14 +12,12 @@ tidy:
 	go mod tidy
 
 generate: deepcopy-gen
-	$(DEEPCOPY_GEN) -i $(PKG)/status -h hack/boilerplate.go.txt --output-base generated --output-package $(PKG)/status -O zz_deepcopy -v 10
-	mv ./generated/$(PKG)/status/zz_*.go status/
-	rm -rf ./generated
+	$(DEEPCOPY_GEN) -i $(PKG)/status -h hack/boilerplate.go.txt --output-base . --trim-path-prefix $(PKG) --output-package $(PKG)/status -O zz_deepcopy -v 10
 
 DEEPCOPY_GEN = $(shell pwd)/bin/deepcopy-gen
 .PHONY: deepcopy-gen
 deepcopy-gen:
-	$(call go-get-tool,$(DEEPCOPY_GEN),k8s.io/code-generator/cmd/deepcopy-gen@latest)
+	$(call go-get-tool,$(DEEPCOPY_GEN),k8s.io/code-generator/cmd/deepcopy-gen@v0.24.0-alpha.3)
 
 test:
 	go test ./... -coverprofile cover.out -v
