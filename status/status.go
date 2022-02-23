@@ -22,6 +22,7 @@ var (
 )
 
 // CommonStatusSpec defines the Common Status Spec
+// +k8s:deepcopy-gen=true
 type CommonStatusSpec struct {
 	// conditions describes the state of the operator's reconciliation functionality.
 	// +patchMergeKey=type
